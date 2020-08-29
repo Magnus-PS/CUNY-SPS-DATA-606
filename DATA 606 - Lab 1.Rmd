@@ -1,0 +1,114 @@
+---
+title: "Lab 1: Intro to R"
+author: "Magnus Skonberg"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+```
+
+
+Note: I'd struggled with setting the work directory and pulled the data into my github to read from there. Hope this is OK.
+
+```{r load-abrbuthnot-data}
+arbuthnot <- read.csv("https://raw.githubusercontent.com/Magnus-PS/CUNY-SPS-DATA-606/Lab-1/arbuthnot.csv", header = TRUE, sep = ",")
+```
+
+### Exercise 1
+
+*What command would you use to extract just the counts of girls baptized? Try it!*
+
+I would use the dollar sign command to go to the arbuthnot data frame and access the girls variable.
+
+```{r}
+arbuthnot$girls
+```
+
+### Exercise 2
+
+Yes, there is a trend. The dots are plotted in an upward sloping trajectory and aside from 1640 to 1660, there is a positive trend in the number of girls baptized over the years.
+
+```{r trend-girls}
+ggplot(data = arbuthnot, aes(x = year, y = girls)) + 
+  geom_point()
+```
+
+
+### Exercise 3
+
+After piping in the total baptism count and boys ratio and then plotting the proportion of boys over time, we see that the boys ratio fluctuates between 0.51 and 0.53 just slightly above 0.50 for the extent of our period of interest.
+
+```{r plot-prop-boys-arbuthnot}
+arbuthnot <- arbuthnot %>%
+  mutate(total = boys + girls)
+
+arbuthnot <- arbuthnot %>%
+  mutate(boy_ratio = boys / total)
+
+ggplot(data = arbuthnot, aes(x = year, y = boy_ratio)) + 
+  geom_line()
+
+```
+
+**Below marks the start of analysis for the present data frame. ** \hfill\break
+First we have to load the dataset ...
+
+```{r load-present-data}
+source("http://www.openintro.org/stat/data/present.R")
+```
+
+### Exercise 4
+
+Years: 1940 - 2002
+Dimensions of data frame: 63 observations (rows) x 3 variables (columns)
+Variable (column) names: year, boys, girls
+
+** **
+
+```{r dim-present}
+?present
+dim(present)
+```
+
+
+### Exercise 5
+
+The count within the present data frame, for the numbers of boys and girls born in the United States between 1940 and 2002, is of a *significantly* greater magnitude than the count within arbuthnot as highlighted by the comparison between minimum and maximum baptisms (for arbuthnot) and births (for present).
+
+```{r count-compare}
+arbuthnot %>%
+  summarize(min = min(boys), max = max(boys))
+present %>%
+  summarize(min=min(boys), max = max(boys))
+```
+
+
+### Exercise 6
+
+Arbuthnot’s observation about boys being born in greater proportion than girls does hold up in the U.S.
+
+```{r plot-prop-boys-present}
+present <- present %>%
+  mutate(total = boys + girls)
+
+present <- present %>%
+  mutate(boy_ratio = boys / total)
+
+ggplot(data = present, aes(x = year, y = boy_ratio)) + 
+  geom_line()
+
+```
+
+
+### Exercise 7
+
+We saw the most total births in the US in 1961.
+
+```{r find-max-total}
+present %>%
+  arrange(desc(total))
+```
+
