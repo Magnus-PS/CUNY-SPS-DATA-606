@@ -1,0 +1,173 @@
+---
+title: "DATA 606 Lab 3"
+author: "Magnus Skonberg"
+date: '`r Sys.Date()`'
+output:
+  openintro::lab_report: default
+  html_document:
+    number_sections: yes
+---
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+library(openintro)
+```
+
+### Exercise 1   
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+What does a streak length of 1 mean, i.e. how many hits and misses are in a streak of 1? What about a streak length of 0?
+
+</div> \hfill\break
+
+**Streak of 1:** 1 shot is hit *and then* 1 shot is missed. A streak of 1 means that 1 consecutive shot was made.
+
+**Streak of 0:** n shots were missed, 0 shots were made. A streak of 0 means that 0 consecutive shots have been made and that n (representing consecutive misses) shots were missed.
+
+
+### Exercise 2
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+Describe the distribution of Kobe’s streak lengths from the 2009 NBA finals. What was his typical streak length? How long was his longest streak of baskets? Make sure to include the accompanying plot in your answer.
+
+</div> \hfill\break
+
+The distribution is right skewed / has a tail to the right and is unimodal. Kobe's average streak length was 0.76 (to 2 decminal places), with the highest frequency streak being 0 and then 1 shot. On a number of occasions Kobe made 2 or 3 shots consecutively and on one occasion, his longest streak, he made 4 shots in a row.
+
+```{r}
+kobe_streak <- calc_streak(kobe_basket$shot)
+
+mean(kobe_streak$length)
+
+ggplot(data = kobe_streak, aes(x = length)) +
+  geom_bar()
+```
+
+### Exercise 3
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+In your simulation of flipping the unfair coin 100 times, how many flips came up heads? Include the code for sampling the unfair coin in your response. Since the markdown file will run the code, and generate a new sample each time you Knit it, you should also “set a seed” before you sample. Read more about setting a seed below.
+
+</div> \hfill\break
+
+
+In my simulation of flipping the unfair coin 100 times, 17 flips came up heads.
+```{r}
+coin_outcomes <- c("heads", "tails")
+set.seed(091220) #set the seed BEFORE sampling for sake of reproducibility
+sim_unfair_coin <- sample(coin_outcomes, size = 100, replace = TRUE, 
+                          prob = c(0.2, 0.8))
+sim_unfair_coin
+table(sim_unfair_coin)
+
+```
+
+### Exercise 4
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+What change needs to be made to the sample function so that it reflects a shooting percentage of 45%? Make this adjustment, then run a simulation to sample 133 shots. Assign the output of this simulation to a new object called sim_basket.
+
+</div> \hfill\break
+
+To reflect a shooting percentage of 45%, we have to account for probability in our sim_basket object. This is accounted for below:
+
+```{r}
+shot_outcomes <- c("H", "M")
+
+set.seed(991122) #set the seed BEFORE sampling for sake of reproducibility
+sim_basket <- sample(shot_outcomes, size = 133, replace = TRUE, 
+                          prob = c(0.45, 0.55))
+sim_basket
+table(sim_basket)
+
+```
+
+### Exercise 5
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+Using calc_streak, compute the streak lengths of sim_basket, and save the results in a data frame called sim_streak.
+
+</div> \hfill\break
+
+```{r}
+
+sim_streak <- calc_streak(sim_basket)
+
+```
+
+### Exercise 6
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+Describe the distribution of streak lengths. What is the typical streak length for this simulated independent shooter with a 45% shooting percentage? How long is the player’s longest streak of baskets in 133 shots? Make sure to include a plot in your answer.
+
+</div> \hfill\break
+
+Similar to Kobe's distribution, it's right skewed / has a tail to the right and is unimodal. The simulated shooter's average streak length was 0.79 (to 2 decimal places) which was slightly higher than Kobe's. The distribution was nearly identical to Kobe's, with the highest frequency streak being 0 and then 1 shot, a few 2 and 3 shot streaks, and 1 4 shot streak. The difference lied in the fact that the simulated shooter had a longest streak of 5 shots and they achieved this mark *twice*.
+
+```{r}
+
+mean(sim_streak$length)
+
+ggplot(data = sim_streak, aes(x = length)) + geom_bar()
+
+```
+
+### Exercise 7
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+If you were to run the simulation of the independent shooter a second time, how would you expect its streak distribution to compare to the distribution from the question above? Exactly the same? Somewhat similar? Totally different? Explain your reasoning.
+
+</div> \hfill\break
+
+If I were to run the simulation of the independent shooter a second time, I would expect the streak distribution to be *slighly different*. 
+
+The reason being that we accounted for 133 observations, which is a reasonable amount. A smaller set of observations (ie. 10) would show more drastic of a variation in distribution and a larger set of observations (ie. 1000) would show more stable distribution of outcomes. To this point, in running the random simulation a number of times before setting the seed, it's output sat in the range of 40-48% which coincides with a distribution that is similar albeit not exactly the same nor totally different.
+
+### Exercise 8
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+How does Kobe Bryant’s distribution of streak lengths compare to the distribution of streak lengths for the simulated shooter? Using this comparison, do you have evidence that the hot hand model fits Kobe’s shooting patterns? Explain.
+
+</div> \hfill\break
+
+More data could be collected to draw a clearer conclusion but based on what we've seen with Kobe's data from 2009 as compared to our simulated shooter: we do not have evidence that a hot hand model fits Kobe's shooting patterns from 2009. 
+
+The hot hand model specified that if Kobe (or another shooter) were to make their first shot then they would be *more likely* to make their second shot (and shots thereafter) and our comparison of distributions do not support this.
+
+Kobe and the simulated shooter's distributions were *slightly different*. The simulated shooter slightly outperformed Kobe, thus discounting the hot hand model (the simulated shooters shots were calculated as independent of one another).
+
+Both distributions were right skewed, unimodal and nearly identical for streaks from 0 to 4 ... the difference sat in the simulated shooter's average streak length (0.79 compared to Kobe's 0.76) and the fact that the simulated shooter had a 5 shot streak *twice*.
+
+Thus it seems Kobe and the simulated shooter were not more likely to make their second shot after making their first shot.
